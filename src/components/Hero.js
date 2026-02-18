@@ -5,91 +5,185 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import sofaImg from "../../public/images/BrownSofa.png";
-
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Hero() {
+export default function Hero({ theme, product, isGray = false, isRed = false, flipTriggerRef }) {
     const containerRef = useRef(null);
+    const sofaWrapRef = useRef(null);  // the flipping container
     const textRef = useRef(null);
-    const sofaRef = useRef(null);
     const bgShapeRef = useRef(null);
+    const floatTweenRef = useRef(null);
 
+    // Expose the flip trigger to parent via ref
     useEffect(() => {
-        let ctx = gsap.context(() => {
-            const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+        if (flipTriggerRef) {
+            flipTriggerRef.current = (onMidpoint, onComplete) => {
+                const sofa = sofaWrapRef.current;
+                const text = textRef.current;
+                if (!sofa) return;
 
-            tl.fromTo(
-                textRef.current.children,
-                { y: 50, opacity: 0 },
-                { y: 0, opacity: 1, duration: 1, stagger: 0.1, delay: 0.2 }
-            )
-                .fromTo(
-                    sofaRef.current,
-                    { x: 100, opacity: 0, scale: 0.9 },
-                    { x: 0, opacity: 1, scale: 1, duration: 1.2 },
-                    "-=0.8"
-                )
-                .fromTo(
-                    bgShapeRef.current,
-                    { scale: 0, opacity: 0 },
-                    { scale: 1, opacity: 1, duration: 1.5, ease: "elastic.out(1, 0.5)" },
-                    "-=1.2"
-                );
+                // Kill existing float tween during flip
+                if (floatTweenRef.current) floatTweenRef.current.kill();
+                gsap.set(sofa, { y: 0 }); // reset float position
 
-            gsap.to(sofaRef.current, {
-                y: -15,
-                duration: 2.5,
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut",
-            });
+                const tl = gsap.timeline();
 
-        }, containerRef);
+                // Phase 1: flip out (0 → 90deg) — element is edge-on at 90, invisible
+                tl.to(sofa, {
+                    rotateY: 90,
+                    duration: 0.36,
+                    ease: "power2.in",
+                })
+                    .to(text, {
+                        x: -24,
+                        opacity: 0,
+                        duration: 0.28,
+                        ease: "power2.in",
+                    }, "<")
 
-        return () => ctx.revert();
-    }, []);
+                    // Midpoint: swap data (sofa is edge-on, nothing visible)
+                    .add(() => {
+                        if (onMidpoint) onMidpoint();
+                    })
+
+                    // Phase 2: flip in from -90 → 0 with new sofa
+                    .fromTo(sofa,
+                        { rotateY: -90 },
+                        {
+                            rotateY: 0,
+                            duration: 0.4,
+                            ease: "power2.out",
+                        }
+                    )
+                    .fromTo(text,
+                        { x: 24, opacity: 0 },
+                        {
+                            x: 0,
+                            opacity: 1,
+                            duration: 0.36,
+                            ease: "power2.out",
+                        },
+                        "<0.04"
+                    )
+                    .add(() => {
+                        // Restart float animation
+                        floatTweenRef.current = gsap.to(sofa, {
+                            y: -15,
+                            duration: 2.5,
+                            repeat: -1,
+                            yoyo: true,
+                            ease: "sine.inOut",
+                        });
+                        if (onComplete) onComplete();
+                    });
+            };
+        }
+    }, [flipTriggerRef]);
+
+    // Initial entrance animation + float
+    useEffect(() => {
+        const sofa = sofaWrapRef.current;
+        const text = textRef.current;
+        if (!sofa || !text) return;
+
+        // Reset any previous state
+        gsap.set(sofa, { rotateY: 0, scaleX: 1, y: 0, opacity: 1 });
+        gsap.set(text, { x: 0, opacity: 1 });
+
+        // Entrance: sofa flips in from side on first mount
+        gsap.fromTo(sofa,
+            { rotateY: -80, scaleX: 0.6, opacity: 0 },
+            { rotateY: 0, scaleX: 1, opacity: 1, duration: 0.9, ease: "power3.out", delay: 0.2 }
+        );
+
+        // Text entrance
+        gsap.fromTo(Array.from(text.children),
+            { y: 24, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.7, stagger: 0.1, ease: "power3.out", delay: 0.3 }
+        );
+
+        // Start float
+        floatTweenRef.current = gsap.to(sofa, {
+            y: -15,
+            duration: 2.5,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: 1.1,
+        });
+
+        return () => {
+            if (floatTweenRef.current) floatTweenRef.current.kill();
+        };
+    }, []); // Only on mount
+
+    if (!product || !theme) return null;
 
     return (
         <section
             ref={containerRef}
-            className="relative min-h-screen w-full flex items-center pt-20 overflow-hidden"
+            className="relative z-20 w-full flex items-center pt-20"
+            style={{ perspective: "1200px" }}
         >
             <div className="max-w-7xl mx-auto w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
                 {/* Left Content */}
                 <div ref={textRef} className="z-10 flex flex-col items-start">
-                    <h2 className="text-white text-5xl md:text-7xl font-bold leading-tight uppercase mb-4">
-                        Make <span className="font-serif italic text-brand-orange">Luxury</span> Your <br />
+                    <h2 className="text-white text-5xl md:text-5xl font-bold leading-tight uppercase mb-4">
+                        Make <span className="font-serif italic" style={{ color: isRed ? "white" : theme.secondary }}>Luxury</span> Your <br />
                         Home <span className="text-3xl md:text-5xl font-light">With Our 50%</span> <br />
                         Discount Offer
                     </h2>
 
-                    <div className="flex flex-wrap gap-4 mt-8">
-                        <button className="bg-brand-orange text-brand-brown px-8 py-3 text-sm font-bold tracking-widest uppercase hover:bg-white hover:text-brand-brown transition-colors duration-300">
+                    <div className="flex flex-wrap gap-4 mt-6">
+                        <button
+                            className="px-8 py-3 text-sm font-bold tracking-widest uppercase hover:brightness-110 transition-all duration-300 hover:scale-105"
+                            style={{
+                                backgroundColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
+                                color: isGray ? "#262626" : isRed ? "#901317" : theme.primary
+                            }}
+                        >
                             Buy Now
                         </button>
-                        <button className="border border-brand-orange text-brand-orange px-8 py-3 text-sm font-bold tracking-widest uppercase hover:bg-brand-orange hover:text-brand-brown transition-colors duration-300">
+                        <button
+                            className="border px-8 py-3 text-sm font-bold tracking-widest uppercase transition-all duration-300 hover:bg-white/10"
+                            style={{
+                                borderColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
+                                color: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary
+                            }}
+                        >
                             Explore
                         </button>
                     </div>
                 </div>
 
                 {/* Right Content */}
-                <div className="relative z-10 flex justify-center items-center h-[50vh] md:h-auto">
+                <div className="relative z-10 flex justify-center items-center h-[50vh] md:h-auto translate-y-20 md:translate-y-34">
                     <div
                         ref={bgShapeRef}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-gradient-to-tr from-orange-500/10 to-transparent rounded-full blur-3xl"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full blur-3xl transition-colors duration-1000"
+                        style={{ background: `radial-gradient(circle, ${theme.secondary}20 0%, transparent 70%)` }}
                     ></div>
 
-                    {/* Sofa Image */}
-                    <div ref={sofaRef} className="relative w-full aspect-[4/3]">
-                        <div className="absolute top-0 right-0 z-20 bg-brand-orange/90 text-brand-brown text-xs font-bold px-4 py-2 uppercase transform translate-x-4 -translate-y-4">
-                            L-Shape Full Family Sofa
+                    {/* Sofa Image — this is the flipping element */}
+                    <div
+                        ref={sofaWrapRef}
+                        className="relative w-full aspect-[4/3] hero-sofa-container"
+                        style={{ transformStyle: "preserve-3d" }}
+                    >
+                        <div
+                            className="absolute top-0 right-0 z-20 text-xs font-bold px-4 py-2 uppercase transform translate-x-4 -translate-y-4 shadow-lg transition-colors duration-500"
+                            style={{
+                                backgroundColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
+                                color: isGray ? "#262626" : isRed ? "#901317" : theme.primary
+                            }}
+                        >
+                            {product.name}
                         </div>
                         <Image
-                            src="/images/BrownSofa.png" // Path relative to the public folder
-                            alt="Luxury Brown Sofa"
+                            id="hero-image"
+                            src={product.image}
+                            alt={product.name}
                             fill
                             className="object-contain drop-shadow-2xl"
                             priority

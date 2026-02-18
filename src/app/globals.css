@@ -11,6 +11,7 @@
   --color-brand-light: #FFF8F0;
 }
 
+
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 123, 63, 0;
@@ -28,4 +29,13 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+}
+
+.hero-sofa-container {
+  transform-style: preserve-3d;
+  will-change: transform;
 }
