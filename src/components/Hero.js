@@ -122,7 +122,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, is
             <div className="max-w-7xl mx-auto w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 md:gap-12 gap-2 items-center">
 
                 {/* Left Content */}
-                <div ref={textRef} className="z-10 flex flex-col items-start">
+                <div ref={textRef} className="z-10 flex flex-col items-start md:mt-0 mt-7">
                     <h2 className="text-white text-4xl md:text-5xl font-bold leading-tight uppercase mb-4">
                         Make <span className="font-serif italic" style={{ color: isRed ? "white" : theme.secondary }}>Luxury</span> Your <br />
                         Home <span className="text-3xl md:text-5xl font-light">With Our 50%</span> <br />
@@ -164,7 +164,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, is
                         style={{ transformStyle: "preserve-3d" }}
                     >
                         <div
-                            className="absolute md:top-5 top-5 right-10 z-20 text-md font-bold px-4 md:py-3 py-2 uppercase transform translate-x-4 -translate-y-4 shadow-lg transition-colors duration-500"
+                            className="absolute md:top-5 top-2 right-10 z-20 text-md font-bold px-4 md:py-3 py-1 uppercase transform translate-x-4 -translate-y-4 shadow-lg transition-colors duration-500"
                             style={{
                                 backgroundColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
                                 color: isGray ? "#262626" : isRed ? "#901317" : isBlue ? "white" : theme.primary

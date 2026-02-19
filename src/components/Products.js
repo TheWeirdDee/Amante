@@ -42,7 +42,7 @@ export default function Products({ products, theme, onProductClick, isGray = fal
     }, []);
 
     return (
-        <section ref={containerRef} className="relative bg-white py-24 px-6 md:px-12 overflow-hidden">
+        <section ref={containerRef} className="relative bg-white md:py-24 py-16 px-6 md:px-12 overflow-hidden">
 
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12">
