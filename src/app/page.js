@@ -58,21 +58,20 @@ export default function Home() {
     if (isAnimating) return;
     setIsAnimating(true);
 
-    // Trigger the flip animation in Hero, passing a callback that swaps data at the midpoint
     if (flipTriggerRef.current) {
       flipTriggerRef.current(() => {
-        // This runs at the midpoint of the flip (sofa is edge-on, invisible)
+
         const newProducts = products.map(p =>
           p.id === clickedProduct.id ? { ...heroProduct, id: p.id } : p
         );
         setHeroProduct({ ...clickedProduct });
         setProducts(newProducts);
       }, () => {
-        // This runs when the full flip is complete
+
         setIsAnimating(false);
       });
     } else {
-      // Fallback if ref not ready
+
       const newProducts = products.map(p =>
         p.id === clickedProduct.id ? { ...heroProduct, id: p.id } : p
       );

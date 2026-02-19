@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Products({ products, theme, onProductClick, isGray = false, isRed = false, isAnimating = false }) {
+export default function Products({ products, theme, onProductClick, isGray = false, isRed = false, isBlue = false, isAnimating = false }) {
     const containerRef = useRef(null);
     const cardsRef = useRef([]);
 
@@ -48,7 +48,7 @@ export default function Products({ products, theme, onProductClick, isGray = fal
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12">
 
                     {/* Description */}
-                    <div className="flex flex-col justify-center space-y-6">
+                    <div className="flex flex-col justify-center space-y-4">
                         <h3 className="text-3xl font-bold uppercase leading-tight transition-colors duration-500" style={{ color: theme.primary }}>
                             Why We Are Best <br /> In Our Town
                         </h3>
@@ -56,7 +56,7 @@ export default function Products({ products, theme, onProductClick, isGray = fal
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dignissim
                             dictum orci id sit dui morbi. Pellentesque luctus felis cras adipiscing aliquet
                             eget facilisis odio.
-                            <br /><br />
+                            <br />
                             In tortor, et proin placerat interdum massa amet nisi. Nisi sit tellus eget
                             facilisis adipiscing egestas libero.
                         </p>
@@ -84,7 +84,7 @@ export default function Products({ products, theme, onProductClick, isGray = fal
                         {/* Decorative Background Strip */}
                         <div
                             className="bg-strip hidden md:block absolute top-25 left-[-12px] w-[770px] h-10 -translate-y-1/2 -z-0 rounded-l-full transition-colors duration-500"
-                            style={{ backgroundColor: `${theme.secondary}4D` }} // 30% opacity
+                            style={{ backgroundColor: `${theme.secondary}4D` }}
                         ></div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
@@ -106,7 +106,7 @@ export default function Products({ products, theme, onProductClick, isGray = fal
                                                 className="absolute top-2 right-2 text-[10px] font-bold px-2 py-1 z-20 transition-colors duration-500"
                                                 style={{
                                                     backgroundColor: isGray ? "#262626" : isRed ? "#901317" : theme.primary,
-                                                    color: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary
+                                                    color: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : isBlue ? "white" : theme.secondary
                                                 }}
                                             >
                                                 {product.tag}

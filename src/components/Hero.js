@@ -7,14 +7,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Hero({ theme, product, isGray = false, isRed = false, flipTriggerRef }) {
+export default function Hero({ theme, product, isGray = false, isRed = false, isBlue = false, flipTriggerRef }) {
     const containerRef = useRef(null);
-    const sofaWrapRef = useRef(null);  // the flipping container
+    const sofaWrapRef = useRef(null);
     const textRef = useRef(null);
     const bgShapeRef = useRef(null);
     const floatTweenRef = useRef(null);
 
-    // Expose the flip trigger to parent via ref
     useEffect(() => {
         if (flipTriggerRef) {
             flipTriggerRef.current = (onMidpoint, onComplete) => {
@@ -22,13 +21,12 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
                 const text = textRef.current;
                 if (!sofa) return;
 
-                // Kill existing float tween during flip
+
                 if (floatTweenRef.current) floatTweenRef.current.kill();
-                gsap.set(sofa, { y: 0 }); // reset float position
+                gsap.set(sofa, { y: 0 });
 
                 const tl = gsap.timeline();
 
-                // Phase 1: flip out (0 → 90deg) — element is edge-on at 90, invisible
                 tl.to(sofa, {
                     rotateY: 90,
                     duration: 0.36,
@@ -41,12 +39,11 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
                         ease: "power2.in",
                     }, "<")
 
-                    // Midpoint: swap data (sofa is edge-on, nothing visible)
+
                     .add(() => {
                         if (onMidpoint) onMidpoint();
                     })
 
-                    // Phase 2: flip in from -90 → 0 with new sofa
                     .fromTo(sofa,
                         { rotateY: -90 },
                         {
@@ -66,7 +63,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
                         "<0.04"
                     )
                     .add(() => {
-                        // Restart float animation
+
                         floatTweenRef.current = gsap.to(sofa, {
                             y: -15,
                             duration: 2.5,
@@ -80,29 +77,26 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
         }
     }, [flipTriggerRef]);
 
-    // Initial entrance animation + float
+
     useEffect(() => {
         const sofa = sofaWrapRef.current;
         const text = textRef.current;
         if (!sofa || !text) return;
 
-        // Reset any previous state
+
         gsap.set(sofa, { rotateY: 0, scaleX: 1, y: 0, opacity: 1 });
         gsap.set(text, { x: 0, opacity: 1 });
 
-        // Entrance: sofa flips in from side on first mount
         gsap.fromTo(sofa,
             { rotateY: -80, scaleX: 0.6, opacity: 0 },
             { rotateY: 0, scaleX: 1, opacity: 1, duration: 0.9, ease: "power3.out", delay: 0.2 }
         );
 
-        // Text entrance
         gsap.fromTo(Array.from(text.children),
             { y: 24, opacity: 0 },
             { y: 0, opacity: 1, duration: 0.7, stagger: 0.1, ease: "power3.out", delay: 0.3 }
         );
 
-        // Start float
         floatTweenRef.current = gsap.to(sofa, {
             y: -15,
             duration: 2.5,
@@ -115,7 +109,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
         return () => {
             if (floatTweenRef.current) floatTweenRef.current.kill();
         };
-    }, []); // Only on mount
+    }, []);
 
     if (!product || !theme) return null;
 
@@ -125,11 +119,11 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
             className="relative z-20 w-full flex items-center pt-20"
             style={{ perspective: "1200px" }}
         >
-            <div className="max-w-7xl mx-auto w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className="max-w-7xl mx-auto w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 md:gap-12 gap-2 items-center">
 
                 {/* Left Content */}
                 <div ref={textRef} className="z-10 flex flex-col items-start">
-                    <h2 className="text-white text-5xl md:text-5xl font-bold leading-tight uppercase mb-4">
+                    <h2 className="text-white text-4xl md:text-5xl font-bold leading-tight uppercase mb-4">
                         Make <span className="font-serif italic" style={{ color: isRed ? "white" : theme.secondary }}>Luxury</span> Your <br />
                         Home <span className="text-3xl md:text-5xl font-light">With Our 50%</span> <br />
                         Discount Offer
@@ -140,7 +134,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
                             className="px-8 py-3 text-sm font-bold tracking-widest uppercase hover:brightness-110 transition-all duration-300 hover:scale-105"
                             style={{
                                 backgroundColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
-                                color: isGray ? "#262626" : isRed ? "#901317" : theme.primary
+                                color: isGray ? "#262626" : isRed ? "#901317" : isBlue ? "white" : theme.primary
                             }}
                         >
                             Buy Now
@@ -149,7 +143,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
                             className="border px-8 py-3 text-sm font-bold tracking-widest uppercase transition-all duration-300 hover:bg-white/10"
                             style={{
                                 borderColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
-                                color: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary
+                                color: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : isBlue ? "white" : theme.secondary
                             }}
                         >
                             Explore
@@ -157,7 +151,6 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
                     </div>
                 </div>
 
-                {/* Right Content */}
                 <div className="relative z-10 flex justify-center items-center h-[50vh] md:h-auto translate-y-20 md:translate-y-34">
                     <div
                         ref={bgShapeRef}
@@ -165,7 +158,6 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
                         style={{ background: `radial-gradient(circle, ${theme.secondary}20 0%, transparent 70%)` }}
                     ></div>
 
-                    {/* Sofa Image — this is the flipping element */}
                     <div
                         ref={sofaWrapRef}
                         className="relative w-full aspect-[4/3] hero-sofa-container"
@@ -175,7 +167,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, fl
                             className="absolute top-0 right-0 z-20 text-xs font-bold px-4 py-2 uppercase transform translate-x-4 -translate-y-4 shadow-lg transition-colors duration-500"
                             style={{
                                 backgroundColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
-                                color: isGray ? "#262626" : isRed ? "#901317" : theme.primary
+                                color: isGray ? "#262626" : isRed ? "#901317" : isBlue ? "white" : theme.primary
                             }}
                         >
                             {product.name}
