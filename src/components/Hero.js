@@ -131,7 +131,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, is
 
                     <div className="flex flex-wrap gap-4 mt-6">
                         <button
-                            className="px-8 py-3 text-sm font-bold tracking-widest uppercase hover:brightness-110 transition-all duration-300 hover:scale-105"
+                            className="px-8 py-3 text-lg tracking-widest uppercase hover:brightness-110 transition-all duration-300 hover:scale-105"
                             style={{
                                 backgroundColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
                                 color: isGray ? "#262626" : isRed ? "#901317" : isBlue ? "white" : theme.primary
@@ -140,7 +140,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, is
                             Buy Now
                         </button>
                         <button
-                            className="border px-8 py-3 text-sm font-bold tracking-widest uppercase transition-all duration-300 hover:bg-white/10"
+                            className="border px-8 py-3 text-lg tracking-widest uppercase transition-all duration-300 hover:bg-white/10"
                             style={{
                                 borderColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
                                 color: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : isBlue ? "white" : theme.secondary
@@ -154,7 +154,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, is
                 <div className="relative z-10 flex justify-center items-center h-[50vh] md:h-auto translate-y-20 md:translate-y-34">
                     <div
                         ref={bgShapeRef}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full blur-3xl transition-colors duration-1000"
+                        className="absolute top-1/ 2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full blur-3xl transition-colors duration-1000"
                         style={{ background: `radial-gradient(circle, ${theme.secondary}20 0%, transparent 70%)` }}
                     ></div>
 
@@ -164,7 +164,7 @@ export default function Hero({ theme, product, isGray = false, isRed = false, is
                         style={{ transformStyle: "preserve-3d" }}
                     >
                         <div
-                            className="absolute top-0 right-0 z-20 text-xs font-bold px-4 py-2 uppercase transform translate-x-4 -translate-y-4 shadow-lg transition-colors duration-500"
+                            className="absolute md:top-5 top-5 right-10 z-20 text-md font-bold px-4 md:py-3 py-2 uppercase transform translate-x-4 -translate-y-4 shadow-lg transition-colors duration-500"
                             style={{
                                 backgroundColor: isGray ? "#A5A5A5" : isRed ? "#FFA53C" : theme.secondary,
                                 color: isGray ? "#262626" : isRed ? "#901317" : isBlue ? "white" : theme.primary
